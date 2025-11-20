@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Driver Panel</title>
+<style>
+    body {
+        font-family: sans-serif;
+        padding: 15px;
+        background: #f7f7f7;
+    }
+    .card {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+    button {
+        width: 100%;
+        padding: 14px;
+        font-size: 18px;
+        border-radius: 8px;
+        border: none;
+        margin-top: 10px;
+        cursor: pointer;
+    }
+    #start { background: #2ecc71; color: white; }
+    #arrived { background: #f1c40f; }
+    #finish { background: #e74c3c; color: white; }
+</style>
+</head>
+<body>
+
+<h2>Driver Control Panel</h2>
+
+<div class="card">
+    <label>เลือกรถ:</label><br>
+    <select id="driver">
+        <option value="รถ 1">🚚 รถ 1</option>
+        <option value="รถ 2">🚚 รถ 2</option>
+        <option value="รถ 3">🚚 รถ 3</option>
+    </select>
+</div>
+
+<div class="card">
+    <button id="start" onclick="sendStatus('START')">เริ่มงาน 🚀</button>
+    <button id="arrived" onclick="sendStatus('ARRIVED')">ถึงลูกค้า 📍</button>
+    <button id="finish" onclick="sendStatus('FINISHED')">เสร็จงาน 🎉</button>
+</div>
+
+<div id="status"></div>
+
+<script>
+const API_URL = "https://prudential-karri-unconciliative.ngrok-free.dev";
+
+function sendStatus(statusText) {
+
+    navigator.geolocation.getCurrentPosition(pos => {
+
+        let payload = {
+            driver: document.getElementById("driver").value,
+            status: statusText,
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude
+        };
+
+        fetch(API_URL, {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify(payload)
+        })
+        .then(r => r.text())
+        .then(t => {
+            document.getElementById("status").innerHTML =
+                "<div class='card'>อัปเดตสำเร็จ ✔<br>" + JSON.stringify(payload) + "</div>";
+        });
+
+    });
+}
+</script>
+
+</body>
+</html>
+
+
